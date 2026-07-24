@@ -1,8 +1,7 @@
 # Tiny Second-hand Shopping Platform — 개발 보고서
 
 > 작은 중고거래 플랫폼 개발 전 과정 보고서
-> 작성자: (이름 / 학번)
-> 최종 수정일: (작성 시 갱신)
+> 작성자: 김진겸[33반]
 
 ---
 
@@ -13,7 +12,7 @@
 | 프로젝트명 | Tiny Second-hand Shopping Platform |
 | 목적 | 중고거래 웹 플랫폼 구현 + 보안 약점 최소화 및 문서화 |
 | 기술 스택 | Python · Flask · Flask-SocketIO · SQLite · Jinja2 (서버 렌더링) |
-| 저장소 | (GitHub public URL) |
+| 저장소 | https://github.com/jini135wii/myShoppingPlatform |
 | 실행 방법 | 루트 `README.md` 참고 |
 
 이 보고서는 **요구사항 분석 → 시스템 설계 → 보안 설계 → 구현 → 테스트/체크리스트 → 유지보수** 순서로 개발 전 과정을 기록한다. 각 단계는 실제 구현이 진행됨에 따라 채워진다. `TODO` 표시는 구현 후 작성 예정 항목이다.
