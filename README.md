@@ -33,11 +33,12 @@
   ```bash
   sudo apt install python3-venv
   ```
+- `openssl` — WSS(HTTPS) 실행 검증 시에만 필요(선택)
 
 ### 2. 설치
 ```bash
-git clone <이 저장소의 GitHub URL>
-cd Shopping_Platform
+git clone https://github.com/jini135wii/myShoppingPlatform.git
+cd myShoppingPlatform
 
 python3 -m venv venv
 source venv/bin/activate        # Windows: venv\Scripts\activate
