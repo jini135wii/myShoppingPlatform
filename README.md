@@ -27,23 +27,32 @@
 
 ## 환경 설정 및 실행 방법
 
-### 1. 요구 사항
-- Python 3.10 이상
+### 1. Requirements
+- **Python 3.10 이상** (미설치 시 설치: https://www.python.org/downloads/)
+- Debian/Ubuntu 계열은 `venv` 모듈이 별도 패키지로 빠져 있을 수 있습니다. 아래 설치 시 오류가 나면 먼저 설치하세요:
+  ```bash
+  sudo apt install python3-venv
+  ```
 
 ### 2. 설치
 ```bash
-# 저장소 클론 후 디렉토리 진입
+git clone <이 저장소의 GitHub URL>
+cd Shopping_Platform
+
 python3 -m venv venv
 source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
 ### 3. 환경 변수 설정
-`.env.example`을 `.env`로 복사하고 `SECRET_KEY`를 채웁니다.
+
+**`.env`가 왜 필요한가**: `SECRET_KEY` 같은 비밀값·환경별 설정(포트, 임계치 등)은 코드(`config.py`)에 하드코딩하면 안 되고, 커밋되지 않는 별도 파일로 분리해야 합니다. `.env.example`은 "어떤 변수가 필요한지" 보여주는 **템플릿**(값은 비어있고 git에 커밋됨)이고, `.env`는 그걸 복사해 **실제 값을 채운 파일**(git에 커밋되지 않음, `.gitignore` 처리)입니다. `config.py`가 실행 시 `.env`를 읽어 값을 적용합니다.
+
+`.env.example`을 `.env`로 복사하고 `SECRET_KEY`를 무작위 값으로 채웁니다(한 번에 실행):
 ```bash
-cp .env.example .env
-python -c "import secrets; print(secrets.token_hex(32))"   # 출력값을 .env의 SECRET_KEY에 입력
+cp .env.example .env && sed -i "s/^SECRET_KEY=.*/SECRET_KEY=$(python3 -c 'import secrets; print(secrets.token_hex(32))')/" .env
 ```
+> macOS(BSD sed)에서는 `sed -i ''` 형태가 필요합니다: `sed -i '' "s/.../"`.
 
 | 변수 | 설명 | 기본값 |
 |------|------|--------|
@@ -59,17 +68,26 @@ python -c "import secrets; print(secrets.token_hex(32))"   # 출력값을 .env�
 | `USE_TLS` | `1`이면 자체서명 인증서(`cert.pem`/`key.pem`)로 HTTPS/WSS 실행(로컬 검증용) | `0` |
 
 ### 4. 실행
+
+두 가지 접속 방식이 있습니다. 평소 개발·과제 확인용은 **HTTP**로 충분하고, **HTTPS/WSS**는 통신 암호화(TLS)를 로컬에서 직접 검증해보고 싶을 때만 사용합니다.
+
+| | 접속 URL | 용도 |
+|---|---|---|
+| **HTTP (기본)** | `http://127.0.0.1:5000` | 평소 실행·개발. WebSocket도 `ws://`(평문)로 연결됨 |
+| **HTTPS/WSS (선택)** | `https://127.0.0.1:5000` | 자체서명 인증서로 TLS 암호화 실행. WebSocket이 `wss://`로 업그레이드됨(암호화 검증용) |
+
+**HTTP로 실행 (기본):**
 ```bash
 python app.py
 ```
 → 브라우저에서 http://127.0.0.1:5000 접속
 
-**HTTPS/WSS로 실행(선택, 로컬 검증용):**
+**HTTPS/WSS로 실행 (선택, 로컬 암호화 검증용):**
 ```bash
 openssl req -x509 -newkey rsa:2048 -nodes -keyout key.pem -out cert.pem -days 365 -subj "/CN=localhost"
 USE_TLS=1 python app.py
 ```
-→ https://127.0.0.1:5000 접속(자체서명 인증서 경고는 "고급 → 계속 진행"). 채팅 접속 시 WebSocket이 `wss://`로 업그레이드됩니다. 운영 배포 시에는 리버스프록시(Nginx 등)에서 TLS를 종단하는 방식을 권장합니다.
+→ https://127.0.0.1:5000 접속(자체서명 인증서 경고는 "고급 → 계속 진행"). 채팅 접속 시 WebSocket이 `wss://`로 업그레이드되는 것을 개발자도구(Network 탭)에서 확인할 수 있습니다. 운영 배포 시에는 이렇게 자체서명 인증서를 쓰는 대신, 리버스프록시(Nginx 등)에서 TLS를 종단하는 방식을 권장합니다.
 
 > DB(`app.db`)는 최초 실행 시 자동 생성됩니다.
 > 실제 배포 시에는 `gunicorn` 등 프로덕션 WSGI 서버 사용을 권장합니다.
