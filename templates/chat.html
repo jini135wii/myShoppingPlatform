@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h1>{{ title }}</h1>
+
+{# 히스토리는 Jinja 자동 이스케이프로 렌더 → XSS 안전 #}
+<div id="chat-box" class="chat-box"
+     data-room="{{ room }}" data-me="{{ current_user.username }}">
+  {% for m in messages %}
+    <div class="msg {% if m.sender_id == current_user.id %}mine{% endif %}">
+      <span class="msg-user">{{ m.sender.username }}</span>
+      <span class="msg-text">{{ m.content }}</span>
+      <span class="msg-time">{{ m.created_at.strftime('%H:%M') }}</span>
+    </div>
+  {% endfor %}
+</div>
+
+<form id="chat-form" class="chat-form">
+  <input id="chat-input" class="input" autocomplete="off" maxlength="1000"
+         placeholder="메시지를 입력하세요" required>
+  <button class="btn" type="submit">전송</button>
+</form>
+
+<script src="{{ url_for('static', filename='socket.io.min.js') }}"></script>
+<script src="{{ url_for('static', filename='chat.js') }}"></script>
+{% endblock %}

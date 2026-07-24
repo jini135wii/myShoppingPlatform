@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}상품 관리{% endblock %}
+{% block content %}
+<h1>상품 관리</h1>
+<p><a href="{{ url_for('admin.dashboard') }}">← 대시보드</a></p>
+<table class="mine-table">
+  <thead><tr><th>ID</th><th>상품명</th><th>판매자</th><th>가격</th><th>상태</th><th>신고</th><th>조치</th></tr></thead>
+  <tbody>
+  {% for p in products %}
+    <tr>
+      <td>{{ p.id }}</td>
+      <td>{{ p.title }}</td>
+      <td><a href="{{ url_for('auth.profile', user_id=p.seller.id) }}">{{ p.seller.username }}</a></td>
+      <td>{{ "{:,}".format(p.price) }}원</td>
+      <td>{{ p.status }}</td>
+      <td>{{ p.report_count }}</td>
+      <td class="row-actions">
+        <a href="{{ url_for('product.edit', product_id=p.id) }}">수정</a>
+        <form method="post" action="{{ url_for('admin.product_status', product_id=p.id) }}" style="display:inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          {% if p.status == 'blocked' %}
+            <button class="linkbtn ok" name="action" value="unblock">차단해제</button>
+          {% else %}
+            <button class="linkbtn" name="action" value="block">차단</button>
+          {% endif %}
+        </form>
+        <form method="post" action="{{ url_for('admin.product_delete', product_id=p.id) }}"
+              style="display:inline" onsubmit="return confirm('정말 삭제할까요?');">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="linkbtn" type="submit">삭제</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

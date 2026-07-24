@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}내 상품{% endblock %}
+{% block content %}
+<div class="list-header">
+  <h1>내 상품</h1>
+  <a class="btn" href="{{ url_for('product.new') }}">+ 상품 등록</a>
+</div>
+
+{% if products %}
+  <table class="mine-table">
+    <thead><tr><th>상품명</th><th>가격</th><th>상태</th><th>관리</th></tr></thead>
+    <tbody>
+    {% for p in products %}
+      <tr>
+        <td><a href="{{ url_for('product.detail', product_id=p.id) }}">{{ p.title }}</a></td>
+        <td>{{ "{:,}".format(p.price) }}원</td>
+        <td>{% if p.status == 'blocked' %}<span class="err">차단됨</span>{% else %}판매중{% endif %}</td>
+        <td class="row-actions">
+          <a href="{{ url_for('product.edit', product_id=p.id) }}">수정</a>
+          {% if p.status == 'blocked' %}
+            <a href="{{ url_for('appeal.appeal') }}">이의제기</a>
+          {% endif %}
+          <form method="post" action="{{ url_for('product.delete', product_id=p.id) }}"
+                onsubmit="return confirm('삭제할까요?');" style="display:inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="linkbtn" type="submit">삭제</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p class="muted">등록한 상품이 없습니다.</p>
+{% endif %}
+{% endblock %}

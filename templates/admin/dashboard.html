@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}관리자 대시보드{% endblock %}
+{% block content %}
+<h1>관리자 대시보드</h1>
+<div class="admin-nav">
+  <a class="btn" href="{{ url_for('admin.users') }}">회원 관리</a>
+  <a class="btn" href="{{ url_for('admin.products') }}">상품 관리</a>
+  <a class="btn" href="{{ url_for('admin.messages') }}">채팅 관리</a>
+  <a class="btn" href="{{ url_for('admin.reports') }}">신고 내역</a>
+  <a class="btn" href="{{ url_for('admin.appeals') }}">이의제기{% if stats.pending_appeals %} ({{ stats.pending_appeals }}){% endif %}</a>
+  <a class="btn" href="{{ url_for('admin.logs') }}">감사 로그</a>
+</div>
+<div class="card">
+  <ul>
+    <li>전체 회원: <b>{{ stats.users }}</b> (휴면 {{ stats.dormant }})</li>
+    <li>전체 상품: <b>{{ stats.products }}</b> (차단 {{ stats.blocked }})</li>
+    <li>채팅 메시지: <b>{{ stats.messages }}</b></li>
+    <li>신고 누적: <b>{{ stats.reports }}</b></li>
+    <li>검토 대기 이의제기: <b>{{ stats.pending_appeals }}</b></li>
+    <li>감사 로그: <b>{{ stats.logs }}</b>건</li>
+  </ul>
+</div>
+{% endblock %}

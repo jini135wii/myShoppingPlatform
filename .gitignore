@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.db
+app.db
+.env
+venv/
+.venv/
+uploads/*
+!uploads/.gitkeep
+cert.pem
+key.pem

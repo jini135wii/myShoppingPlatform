@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}내 지갑{% endblock %}
+{% block content %}
+<h1>내 지갑</h1>
+
+<div class="card">
+  <p class="muted" style="margin:0">보유 포인트</p>
+  <p class="price" style="margin:4px 0 0">{{ "{:,}".format(balance) }} P</p>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">송금</h3>
+  <form method="post" action="{{ url_for('wallet.transfer') }}">
+    {{ form.hidden_tag() }}
+    <label>{{ form.recipient.label }}</label>
+    {{ form.recipient(class="input", placeholder="받는 사람 아이디") }}
+    <label>{{ form.amount.label }}</label>
+    {{ form.amount(class="input", min="1", placeholder="보낼 포인트") }}
+    {{ form.submit(class="btn") }}
+  </form>
+</div>
+
+<h3>거래 내역</h3>
+<table class="mine-table">
+  <thead><tr><th>일시</th><th>구분</th><th>상대</th><th>금액</th></tr></thead>
+  <tbody>
+  {% for t in txs %}
+    <tr>
+      <td>{{ t.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+      {% if t.kind == 'bonus' %}
+        <td>가입 보너스</td><td class="muted">시스템</td>
+        <td class="amt-in">+{{ "{:,}".format(t.amount) }} P</td>
+      {% elif t.receiver_id == me_id %}
+        <td>받음</td><td>{{ names.get(t.sender_id, '?') }}</td>
+        <td class="amt-in">+{{ "{:,}".format(t.amount) }} P</td>
+      {% else %}
+        <td>보냄</td><td>{{ names.get(t.receiver_id, '?') }}</td>
+        <td class="amt-out">-{{ "{:,}".format(t.amount) }} P</td>
+      {% endif %}
+    </tr>
+  {% else %}
+    <tr><td colspan="4" class="muted">거래 내역이 없습니다.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

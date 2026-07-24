@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}마이페이지{% endblock %}
+{% block content %}
+<h1>마이페이지</h1>
+<form method="post" class="card" novalidate>
+  {{ form.hidden_tag() }}
+
+  <label>아이디</label>
+  <input class="input" value="{{ user.username }}" disabled>
+
+  <label>{{ form.bio.label }}</label>
+  {{ form.bio(class="input", rows=4) }}
+  {% for e in form.bio.errors %}<div class="err">{{ e }}</div>{% endfor %}
+
+  <label>{{ form.current_password.label }}</label>
+  {{ form.current_password(class="input", autocomplete="current-password") }}
+  {% for e in form.current_password.errors %}<div class="err">{{ e }}</div>{% endfor %}
+  <p class="hint">비밀번호를 바꿀 때만 입력하세요.</p>
+
+  <label>{{ form.new_password.label }}</label>
+  {{ form.new_password(class="input", autocomplete="new-password") }}
+  {% for e in form.new_password.errors %}<div class="err">{{ e }}</div>{% endfor %}
+
+  <label>{{ form.confirm.label }}</label>
+  {{ form.confirm(class="input", autocomplete="new-password") }}
+  {% for e in form.confirm.errors %}<div class="err">{{ e }}</div>{% endfor %}
+
+  {{ form.submit(class="btn") }}
+</form>
+{% endblock %}

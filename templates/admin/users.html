@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}회원 관리{% endblock %}
+{% block content %}
+<h1>회원 관리</h1>
+<p><a href="{{ url_for('admin.dashboard') }}">← 대시보드</a></p>
+<table class="mine-table">
+  <thead><tr><th>ID</th><th>아이디</th><th>상태</th><th>신고</th><th>관리자</th><th>가입일</th><th>조치</th></tr></thead>
+  <tbody>
+  {% for u in users %}
+    <tr>
+      <td>{{ u.id }}</td>
+      <td><a href="{{ url_for('auth.profile', user_id=u.id) }}">{{ u.username }}</a></td>
+      <td>{{ u.status }}</td>
+      <td>{{ u.report_count }}</td>
+      <td>{{ '예' if u.is_admin else '-' }}</td>
+      <td>{{ u.created_at.strftime('%Y-%m-%d') }}</td>
+      <td class="row-actions">
+        {% if u.id == current_user.id %}
+          <span class="muted">(본인)</span>
+        {% else %}
+          {% if not u.is_admin %}
+          <form method="post" action="{{ url_for('admin.user_status', user_id=u.id) }}" style="display:inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% if u.status == 'dormant' %}
+              <button class="linkbtn ok" name="action" value="activate">활성화</button>
+            {% else %}
+              <button class="linkbtn" name="action" value="dormant">휴면</button>
+            {% endif %}
+          </form>
+          {% endif %}
+          <form method="post" action="{{ url_for('admin.user_role', user_id=u.id) }}" style="display:inline">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% if u.is_admin %}
+              <button class="linkbtn" name="action" value="demote">관리자해제</button>
+            {% else %}
+              <button class="linkbtn ok" name="action" value="promote">관리자지정</button>
+            {% endif %}
+          </form>
+          <form method="post" action="{{ url_for('admin.user_delete', user_id=u.id) }}"
+                style="display:inline" onsubmit="return confirm('이 회원과 관련 데이터를 모두 삭제할까요?');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="linkbtn" type="submit">삭제</button>
+          </form>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

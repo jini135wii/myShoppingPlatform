@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="list-header">
+  <h1>상품 목록</h1>
+  {% if current_user %}<a class="btn" href="{{ url_for('product.new') }}">+ 상품 등록</a>{% endif %}
+</div>
+
+<form class="search" method="get" action="{{ url_for('index') }}" role="search">
+  <input class="input" type="search" name="q" value="{{ q }}"
+         placeholder="상품명·설명 검색" aria-label="상품 검색">
+  <button class="btn" type="submit">검색</button>
+  {% if q %}<a class="search-clear" href="{{ url_for('index') }}">초기화</a>{% endif %}
+</form>
+{% if q %}<p class="muted">'{{ q }}' 검색 결과 {{ products|length }}건</p>{% endif %}
+
+{% if products %}
+  {# 액자식 갤러리: 사진 + 상품명. 클릭 시 상세 페이지(FR-2.6) #}
+  <div class="gallery">
+    {% for p in products %}
+      <a class="frame-card" href="{{ url_for('product.detail', product_id=p.id) }}">
+        <div class="frame">
+          <div class="frame-inner">
+            {% if p.image_path %}
+              <img src="{{ url_for('product.uploaded_file', filename=p.image_path) }}" alt="상품 이미지" loading="lazy">
+            {% else %}
+              <span class="noimg">이미지 없음</span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="placard">{{ p.title }}</div>
+      </a>
+    {% endfor %}
+  </div>
+{% elif q %}
+  <p class="muted">'{{ q }}'에 대한 검색 결과가 없습니다.</p>
+{% else %}
+  <p class="muted">아직 등록된 상품이 없습니다.{% if current_user %} 첫 상품을 등록해 보세요!{% endif %}</p>
+{% endif %}
+{% endblock %}

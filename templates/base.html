@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}중고마켓{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="topbar"></div>
+  <nav class="nav">
+    <a class="brand" href="{{ url_for('index') }}">🛍 중고마켓</a>
+    <div class="nav-links">
+      {% if current_user %}
+        <a href="{{ url_for('chat.global_chat') }}">전체 채팅</a>
+        <a href="{{ url_for('chat.inbox') }}">쪽지함</a>
+        <a href="{{ url_for('product.new') }}">상품 등록</a>
+        <a href="{{ url_for('product.mine') }}">내 상품</a>
+        <a href="{{ url_for('wallet.wallet') }}">지갑</a>
+        {% if current_user.is_admin %}<a href="{{ url_for('admin.dashboard') }}">관리자</a>{% endif %}
+        <span class="nav-sep"></span>
+        <a class="nav-user" href="{{ url_for('auth.profile', user_id=current_user.id) }}">{{ current_user.username }}</a>
+        <a href="{{ url_for('auth.mypage') }}">마이페이지</a>
+        <a class="nav-logout" href="{{ url_for('auth.logout') }}">로그아웃</a>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}">로그인</a>
+        <a href="{{ url_for('auth.register') }}">회원가입</a>
+        <a href="{{ url_for('appeal.appeal') }}">이의제기</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, msg in messages %}
+          <div class="flash flash-{{ category }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

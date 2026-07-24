@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{% if mode == 'new' %}상품 등록{% else %}상품 수정{% endif %}{% endblock %}
+{% block content %}
+<h1>{% if mode == 'new' %}상품 등록{% else %}상품 수정{% endif %}</h1>
+
+<form method="post" enctype="multipart/form-data" class="card" novalidate>
+  {{ form.hidden_tag() }}   {# CSRF 토큰 포함 #}
+
+  <label>{{ form.title.label }}</label>
+  {{ form.title(class="input") }}
+  {% for e in form.title.errors %}<div class="err">{{ e }}</div>{% endfor %}
+
+  <label>{{ form.price.label }}</label>
+  {{ form.price(class="input") }}
+  {% for e in form.price.errors %}<div class="err">{{ e }}</div>{% endfor %}
+
+  <label>{{ form.description.label }}</label>
+  {{ form.description(class="input", rows=4) }}
+  {% for e in form.description.errors %}<div class="err">{{ e }}</div>{% endfor %}
+
+  <label>{{ form.image.label }}
+    {% if mode == 'edit' %}<span class="hint">(변경 시에만 선택)</span>{% endif %}
+  </label>
+  {{ form.image(class="input") }}
+  {% for e in form.image.errors %}<div class="err">{{ e }}</div>{% endfor %}
+  {% if mode == 'edit' and product and product.image_path %}
+    <p class="hint">현재 등록된 이미지가 있습니다.</p>
+  {% endif %}
+
+  {{ form.submit(class="btn") }}
+</form>
+<p class="muted"><a href="{{ url_for('index') }}">← 목록으로</a></p>
+{% endblock %}

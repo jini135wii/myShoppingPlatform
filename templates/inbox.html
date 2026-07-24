@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}쪽지함{% endblock %}
+{% block content %}
+<h1>쪽지함</h1>
+<p class="muted">1:1 대화 목록입니다. <a href="{{ url_for('chat.global_chat') }}">전체 채팅</a>으로도 이동할 수 있어요.</p>
+
+{% if convos %}
+  <ul class="dm-list">
+  {% for c in convos %}
+    <li>
+      <a class="dm-item" href="{{ url_for('chat.direct_chat', user_id=c.id) }}">
+        <span class="dm-avatar">{{ c.username[0]|upper }}</span>
+        <span class="dm-main">
+          <span class="dm-name">{{ c.username }}</span>
+          <span class="dm-last">{{ c.last }}</span>
+        </span>
+        <span class="dm-time">{{ c.at.strftime('%m-%d %H:%M') }}</span>
+      </a>
+    </li>
+  {% endfor %}
+  </ul>
+{% else %}
+  <p class="muted">아직 나눈 1:1 대화가 없습니다. 상품 상세나 프로필에서 대화를 시작해 보세요.</p>
+{% endif %}
+{% endblock %}

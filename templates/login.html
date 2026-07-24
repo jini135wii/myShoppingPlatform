@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}로그인{% endblock %}
+{% block content %}
+<div class="auth-card">
+  <div class="auth-head">
+    <div class="auth-brand">🛍 중고마켓</div>
+    <p class="auth-sub">다시 오셨네요. 로그인하고 거래를 이어가세요.</p>
+  </div>
+  <form method="post" class="auth-body" novalidate>
+    {{ form.hidden_tag() }}
+    <label>{{ form.username.label }}</label>
+    {{ form.username(class="input", autocomplete="username", placeholder="아이디") }}
+    {% for e in form.username.errors %}<div class="err">{{ e }}</div>{% endfor %}
+
+    <label>{{ form.password.label }}</label>
+    {{ form.password(class="input", autocomplete="current-password", placeholder="비밀번호") }}
+    {% for e in form.password.errors %}<div class="err">{{ e }}</div>{% endfor %}
+
+    {{ form.submit(class="btn") }}
+    <p class="auth-foot">계정이 없으신가요? <a href="{{ url_for('auth.register') }}">회원가입</a></p>
+  </form>
+</div>
+{% endblock %}

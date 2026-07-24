@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}이의제기 심사{% endblock %}
+{% block content %}
+<h1>이의제기 심사</h1>
+<p><a href="{{ url_for('admin.dashboard') }}">← 대시보드</a></p>
+<table class="mine-table">
+  <thead><tr><th>ID</th><th>신청자</th><th>사유</th><th>상태</th><th>일시</th><th>조치</th></tr></thead>
+  <tbody>
+  {% for a in appeals %}
+    <tr>
+      <td>{{ a.id }}</td>
+      <td>{{ a.user.username }} <span class="muted">({{ a.user.status }})</span></td>
+      <td>{{ a.message }}</td>
+      <td>{{ a.status }}</td>
+      <td>{{ a.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+      <td class="row-actions">
+        {% if a.status == 'pending' %}
+        <form method="post" action="{{ url_for('admin.appeal_resolve', appeal_id=a.id) }}" style="display:inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="linkbtn ok" name="action" value="approve">승인(사면)</button>
+        </form>
+        <form method="post" action="{{ url_for('admin.appeal_resolve', appeal_id=a.id) }}" style="display:inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="linkbtn" name="action" value="reject">반려</button>
+        </form>
+        {% else %}—{% endif %}
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="6" class="muted">이의제기가 없습니다.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ user.username }} 프로필{% endblock %}
+{% block content %}
+<h1>{{ user.username }}</h1>
+{% if user.status == 'dormant' %}<div class="flash flash-danger">휴면 계정입니다.</div>{% endif %}
+
+<div class="card">
+  <h3>소개</h3>
+  {# Jinja2 자동 이스케이프로 XSS 방어 — 절대 |safe 사용 금지 #}
+  <p>{{ user.bio or "등록된 소개글이 없습니다." }}</p>
+  <p class="muted">가입일: {{ user.created_at.strftime('%Y-%m-%d') }}</p>
+</div>
+
+{% if current_user and current_user.id != user.id %}
+  <p class="actions">
+    <a class="btn" href="{{ url_for('chat.direct_chat', user_id=user.id) }}">1:1 채팅하기</a>
+    <a class="btn" href="{{ url_for('wallet.wallet', to=user.username) }}">💸 송금하기</a>
+  </p>
+  {# FR-4.1/4.2: 사용자 신고 (사유 필수). 임계치 도달 시 자동 휴면(FR-4.4) #}
+  <details class="report">
+    <summary>🚩 이 사용자 신고</summary>
+    <form class="report-form" method="post" action="{{ url_for('report.report') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="target_type" value="user">
+      <input type="hidden" name="target_id" value="{{ user.id }}">
+      <input class="input" type="text" name="reason" maxlength="500" required
+             placeholder="신고 사유를 입력하세요">
+      <button class="btn btn-danger" type="submit">신고 접수</button>
+    </form>
+  </details>
+{% endif %}
+{% endblock %}

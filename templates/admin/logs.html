@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}감사 로그{% endblock %}
+{% block content %}
+<h1>감사 로그</h1>
+<p><a href="{{ url_for('admin.dashboard') }}">← 대시보드</a></p>
+<p class="muted">관리자 행위 기록(최근 200건). 부인 방지·추적용.</p>
+<table class="mine-table">
+  <thead><tr><th>일시</th><th>관리자</th><th>행위</th><th>대상</th><th>상세</th></tr></thead>
+  <tbody>
+  {% for l in logs %}
+    <tr>
+      <td>{{ l.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+      <td>{{ names.get(l.admin_id, '#' ~ l.admin_id) }}</td>
+      <td>{{ l.action }}</td>
+      <td>{% if l.target_type %}{{ l.target_type }} #{{ l.target_id }}{% else %}-{% endif %}</td>
+      <td>{{ l.detail }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="5" class="muted">기록이 없습니다.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

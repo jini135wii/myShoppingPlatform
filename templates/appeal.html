@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}이의제기{% endblock %}
+{% block content %}
+<h1>차단·휴면 이의제기</h1>
+<div class="card">
+  {% if logged_in %}
+    <p class="muted">차단된 내 상품에 대해 소명할 수 있습니다. 관리자 검토 후 반영됩니다.</p>
+  {% else %}
+    <p class="muted">신고 누적으로 계정이 휴면되었거나 상품이 차단된 경우, 본인 인증 후 소명할 수 있습니다.
+    (로그인이 아니며, 관리자 검토 후 반영됩니다.)</p>
+  {% endif %}
+  <form method="post" novalidate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% if not logged_in %}
+      <label>아이디</label>
+      <input class="input" type="text" name="username" autocomplete="username">
+      <label>비밀번호</label>
+      <input class="input" type="password" name="password" autocomplete="current-password">
+    {% endif %}
+    <label>이의제기 사유</label>
+    <textarea class="input" name="message" rows="4" maxlength="1000"
+              placeholder="차단·휴면이 부당하다고 생각하는 이유를 적어주세요"></textarea>
+    <button class="btn" type="submit">이의제기 접수</button>
+  </form>
+</div>
+<p><a href="{{ url_for('product.mine') if logged_in else url_for('auth.login') }}">← 돌아가기</a></p>
+{% endblock %}

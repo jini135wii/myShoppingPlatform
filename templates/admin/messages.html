@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}채팅 관리{% endblock %}
+{% block content %}
+<h1>채팅 관리</h1>
+<p><a href="{{ url_for('admin.dashboard') }}">← 대시보드</a></p>
+<p class="muted">전체 채팅 최근 100건. 부적절한 메시지를 삭제할 수 있습니다.
+  1:1 DM은 프라이버시 보호를 위해 관리자도 조회·삭제할 수 없습니다.</p>
+<table class="mine-table">
+  <thead><tr><th>ID</th><th>보낸이</th><th>내용</th><th>일시</th><th>조치</th></tr></thead>
+  <tbody>
+  {% for m in messages %}
+    <tr>
+      <td>{{ m.id }}</td>
+      <td>{{ names.get(m.sender_id, '(삭제됨)') }}</td>
+      {# Jinja2 자동 이스케이프로 XSS 방어 #}
+      <td>{{ m.content }}</td>
+      <td>{{ m.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+      <td class="row-actions">
+        <form method="post" action="{{ url_for('admin.message_delete', message_id=m.id) }}" style="display:inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="linkbtn" type="submit">삭제</button>
+        </form>
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="5" class="muted">메시지가 없습니다.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

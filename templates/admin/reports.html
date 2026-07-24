@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}신고 내역{% endblock %}
+{% block content %}
+<h1>신고 내역</h1>
+<p><a href="{{ url_for('admin.dashboard') }}">← 대시보드</a></p>
+<table class="mine-table">
+  <thead><tr><th>ID</th><th>신고자</th><th>대상</th><th>사유</th><th>일시</th><th>조치</th></tr></thead>
+  <tbody>
+  {% for r in reports %}
+    <tr>
+      <td>{{ r.id }}</td>
+      <td><a href="{{ url_for('auth.profile', user_id=r.reporter_id) }}">{{ r.reporter }}</a></td>
+      <td>
+        <span class="muted">{{ '사용자' if r.target_type == 'user' else '상품' }}:</span>
+        {% if r.target_type == 'user' and r.target_exists %}
+          <a href="{{ url_for('auth.profile', user_id=r.target_id) }}">{{ r.target_label }}</a>
+        {% else %}
+          {{ r.target_label }}
+        {% endif %}
+      </td>
+      <td>{{ r.reason }}</td>
+      <td>{{ r.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+      <td class="row-actions">
+        <form method="post" action="{{ url_for('admin.report_delete', report_id=r.id) }}" style="display:inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="linkbtn" type="submit">삭제</button>
+        </form>
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="6" class="muted">신고 내역이 없습니다.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

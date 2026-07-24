@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}회원가입{% endblock %}
+{% block content %}
+<div class="auth-card">
+  <div class="auth-head">
+    <div class="auth-brand">🛍 중고마켓</div>
+    <p class="auth-sub">몇 가지만 입력하면 바로 시작할 수 있어요.</p>
+  </div>
+  <form method="post" class="auth-body" novalidate>
+    {{ form.hidden_tag() }}   {# CSRF 토큰 포함 #}
+    <label>{{ form.username.label }}</label>
+    {{ form.username(class="input", autocomplete="username", placeholder="아이디") }}
+    {% for e in form.username.errors %}<div class="err">{{ e }}</div>{% endfor %}
+    <p class="hint">3~20자 · 영문/숫자/밑줄</p>
+
+    <label>{{ form.password.label }}</label>
+    {{ form.password(class="input", autocomplete="new-password", placeholder="비밀번호") }}
+    {% for e in form.password.errors %}<div class="err">{{ e }}</div>{% endfor %}
+    <p class="hint">8자 이상</p>
+
+    <label>{{ form.confirm.label }}</label>
+    {{ form.confirm(class="input", autocomplete="new-password", placeholder="비밀번호 확인") }}
+    {% for e in form.confirm.errors %}<div class="err">{{ e }}</div>{% endfor %}
+
+    {{ form.submit(class="btn") }}
+    <p class="auth-foot">이미 계정이 있으신가요? <a href="{{ url_for('auth.login') }}">로그인</a></p>
+  </form>
+</div>
+{% endblock %}
