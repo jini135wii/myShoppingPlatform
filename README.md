@@ -105,34 +105,6 @@ DB 내용을 직접 조회하려면:
 ./venv/bin/python tools/dbview.py users      # 특정 테이블
 ```
 
-### 6. 데이터베이스 초기화
-⚠️ 아래 방법은 모두 **데이터를 되돌릴 수 없이 삭제**합니다. 실행 전 필요한 데이터가 없는지 확인하세요.
-
-**방법 A — 파일째로 삭제 후 재생성 (가장 간단, 완전 초기화)**
-```bash
-rm app.db
-python app.py     # 실행 시 create_all()이 빈 스키마를 자동 재생성
-```
-계정도 전부 사라지므로, 재가입 후 `tools/make_admin.py`로 관리자를 다시 만들어야 합니다.
-
-**방법 B — 스키마는 유지하고 데이터(행)만 비우기**
-```bash
-./venv/bin/python -c "
-from app import app, db
-with app.app_context():
-    for t in reversed(db.metadata.sorted_tables):
-        db.session.execute(t.delete())
-    db.session.commit()
-    print('전체 테이블 데이터 삭제 완료')
-"
-```
-업로드된 이미지 파일은 자동으로 지워지지 않으므로, 필요하면 `uploads/` 폴더도 함께 비우세요:
-```bash
-rm -f uploads/*.png uploads/*.jpg uploads/*.jpeg uploads/*.gif uploads/*.webp
-```
-
-> `tests/`의 자동화 테스트는 매번 별도의 임시 DB를 생성·삭제하므로 위 초기화와 무관하게 항상 독립적으로 동작합니다.
-
 ## 보안 설계 요약
 비밀번호 해싱(scrypt+salt), CSRF 토큰, 세션 쿠키 보안 플래그, 세션 고정 방어, **로그인 타이밍 사이드채널 방지**(더미 해시로 응답시간 균일화), 로그인 시도 제한(브루트포스 완화), XSS 자동 이스케이프, SQL 인젝션 방어(ORM), 사용자 열거 방지, **파일 업로드 검증**(매직바이트+난수 파일명), **IDOR 방어**(소유권 검증), **WebSocket 인증·1:1 방 접근 통제·채팅 스팸 방지**, **관리자 권한 분리(403)·감사 로그**, **이의제기 인증 분리**(휴면 우회 로그인 차단), **가상 지갑 경쟁조건/이중지불 방어**(조건부 UPDATE), 커스텀 에러 페이지(403/404/500) 등을 적용합니다.
 
